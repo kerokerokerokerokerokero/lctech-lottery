@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
+	import { base } from '$app/paths';
 	import { onMount } from 'svelte';
 
 	type Member = { id: string; name: string; photo: string };
@@ -148,6 +149,8 @@
 </script>
 
 <main class="casino-bg">
+	<img class="bg-art" src={`${base}/casino-chips.svg`} alt="" aria-hidden="true" />
+	<img class="slot-art" src={`${base}/slot-reel.svg`} alt="" aria-hidden="true" />
 	<div class="bg-glow bg-glow-a"></div>
 	<div class="bg-glow bg-glow-b"></div>
 	<section class="card">
@@ -281,6 +284,28 @@
 		display: grid;
 		gap: 1rem;
 		grid-template-columns: 1.2fr 1fr;
+	}
+	.bg-art {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		opacity: .34;
+		z-index: -3;
+		pointer-events: none;
+	}
+	.slot-art {
+		position: absolute;
+		right: 14px;
+		bottom: 10px;
+		width: min(24vw, 220px);
+		opacity: .2;
+		transform: rotate(-8deg);
+		z-index: -2;
+		pointer-events: none;
+		filter: drop-shadow(0 10px 20px rgba(0,0,0,.35));
 	}
 	.bg-glow { position: absolute; border-radius: 999px; filter: blur(40px); z-index: -1; }
 	.bg-glow-a { width: 340px; height: 340px; background: rgba(255, 70, 70, 0.22); top: -80px; left: -70px; }
