@@ -8,6 +8,7 @@
 	let { data } = $props<{ data: { members: Member[]; source: string } }>();
 
 	const STORAGE_KEY = 'lctech-lottery-state-v2';
+	const AUDIO_KEY = 'lctech-lottery-audio-muted';
 	const allMembers = [...data.members];
 
 	let remaining = $state<Member[]>([...allMembers]);
@@ -22,6 +23,11 @@
 	let jackpotFlash = $state(false);
 	let jackpotName = $state('');
 	let jackpotPhoto = $state('');
+	let muted = $state(false);
+	let confettiCanvas = $state<HTMLCanvasElement | null>(null);
+
+	let audioCtx: AudioContext | null = null;
+	let spinOsc: OscillatorNode | null = null;
 
 	function persist() {
 		if (!browser) return;
@@ -39,8 +45,107 @@
 		);
 	}
 
+	function getAudioCtx() {
+		if (!browser) return null;
+		if (!audioCtx) audioCtx = new AudioContext();
+		return audioCtx;
+	}
+
+	function beep(freq: number, duration = 120, type: OscillatorType = 'triangle', volume = 0.05) {
+		if (muted) return;
+		const ctx = getAudioCtx();
+		if (!ctx) return;
+		const osc = ctx.createOscillator();
+		const gain = ctx.createGain();
+		osc.type = type;
+		osc.frequency.value = freq;
+		gain.gain.value = volume;
+		osc.connect(gain);
+		gain.connect(ctx.destination);
+		osc.start();
+		setTimeout(() => {
+			osc.stop();
+			osc.disconnect();
+			gain.disconnect();
+		}, duration);
+	}
+
+	function startSpinSound() {
+		if (muted || spinOsc) return;
+		const ctx = getAudioCtx();
+		if (!ctx) return;
+		spinOsc = ctx.createOscillator();
+		const gain = ctx.createGain();
+		spinOsc.type = 'sawtooth';
+		spinOsc.frequency.value = 140;
+		gain.gain.value = 0.02;
+		spinOsc.connect(gain);
+		gain.connect(ctx.destination);
+		spinOsc.start();
+		setTimeout(() => {
+			gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.05);
+		}, 900);
+	}
+
+	function stopSpinSound() {
+		if (!spinOsc) return;
+		spinOsc.stop();
+		spinOsc.disconnect();
+		spinOsc = null;
+	}
+
+	function playWinSound() {
+		beep(660, 120, 'square', 0.06);
+		setTimeout(() => beep(880, 120, 'square', 0.06), 110);
+		setTimeout(() => beep(1040, 180, 'square', 0.07), 220);
+	}
+
+	function triggerConfetti() {
+		if (!confettiCanvas) return;
+		const canvas = confettiCanvas;
+		const ctx = canvas.getContext('2d');
+		if (!ctx) return;
+		const w = (canvas.width = window.innerWidth);
+		const h = (canvas.height = window.innerHeight);
+		const particles = Array.from({ length: 70 }, () => ({
+			x: w / 2,
+			y: h * 0.38,
+			vx: (Math.random() - 0.5) * 8,
+			vy: Math.random() * -7 - 2,
+			g: 0.2 + Math.random() * 0.1,
+			r: 2 + Math.random() * 4,
+			c: ['#ffd86b', '#ff6b6b', '#fff1b0', '#9cffd0'][Math.floor(Math.random() * 4)]
+		}));
+
+		let frame = 0;
+		function tick() {
+			ctx.clearRect(0, 0, w, h);
+			particles.forEach((p) => {
+				p.x += p.vx;
+				p.y += p.vy;
+				p.vy += p.g;
+				ctx.fillStyle = p.c;
+				ctx.beginPath();
+				ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+				ctx.fill();
+			});
+			frame++;
+			if (frame < 60) requestAnimationFrame(tick);
+			else ctx.clearRect(0, 0, w, h);
+		}
+		requestAnimationFrame(tick);
+	}
+
+	function prizeTier(prize: string, idx: number) {
+		if (/特獎|頭獎|grand|jackpot/i.test(prize)) return 'tier-gold';
+		if (/一獎|二獎|貳獎|silver/i.test(prize)) return 'tier-silver';
+		if (/三獎|blue|bronze/i.test(prize)) return 'tier-bronze';
+		return ['tier-gold', 'tier-silver', 'tier-bronze'][idx % 3];
+	}
+
 	onMount(() => {
 		if (!browser || allMembers.length === 0) return;
+		muted = localStorage.getItem(AUDIO_KEY) === '1';
 		const raw = localStorage.getItem(STORAGE_KEY);
 		if (!raw) return;
 		try {
@@ -74,6 +179,7 @@
 
 	async function spinAndPick(pool: Member[]) {
 		const spinMs = 1100;
+		startSpinSound();
 		const timer = setInterval(() => {
 			const m = randomMember(pool);
 			currentName = m?.name ?? '抽獎中...';
@@ -81,11 +187,14 @@
 		}, 55);
 		await sleep(spinMs);
 		clearInterval(timer);
+		stopSpinSound();
 		const winner = randomMember(pool);
 		currentName = winner.name;
 		currentPhoto = winner.photo;
 		jackpotName = winner.name;
 		jackpotPhoto = winner.photo;
+		playWinSound();
+		triggerConfetti();
 		jackpotFlash = true;
 		setTimeout(() => (jackpotFlash = false), 1200);
 		return winner;
@@ -144,6 +253,11 @@
 		persist();
 	}
 
+	function toggleMute() {
+		muted = !muted;
+		if (browser) localStorage.setItem(AUDIO_KEY, muted ? '1' : '0');
+	}
+
 	function clearAll() {
 		remaining = [...allMembers];
 		rounds = [];
@@ -168,6 +282,7 @@
 			</div>
 		</div>
 	{/if}
+	<canvas class="confetti-layer" bind:this={confettiCanvas} aria-hidden="true"></canvas>
 	<img class="bg-art" src={`${base}/casino-chips.svg`} alt="" aria-hidden="true" />
 	<img class="slot-art" src={`${base}/slot-reel.svg`} alt="" aria-hidden="true" />
 	<div class="bg-glow bg-glow-a"></div>
@@ -238,6 +353,9 @@
 				</svg>
 				開始抽獎
 			</button>
+			<button class="ghost" onclick={toggleMute}>
+				{muted ? '🔇 靜音中' : '🔊 音效開啟'}
+			</button>
 		</div>
 
 		{#if message}
@@ -269,10 +387,10 @@
 			<p class="empty">尚未抽出得獎者</p>
 		{:else}
 			<div class="rounds">
-				{#each rounds as round (round.id)}
-					<div class="round">
+				{#each rounds as round, roundIndex (round.id)}
+					<div class={`round ${prizeTier(round.prize, roundIndex)}`}>
 						<div class="round-head">
-							<h3>{round.prize}</h3>
+							<h3><span class="prize-badge">{round.prize}</span></h3>
 							<button class="small danger" onclick={() => clearRound(round.id)}>清除此獎項</button>
 						</div>
 						<ul>
@@ -317,6 +435,14 @@
 		flex-direction: column;
 		gap: 1rem;
 		align-items: center;
+	}
+	.confetti-layer {
+		position: fixed;
+		inset: 0;
+		width: 100vw;
+		height: 100vh;
+		pointer-events: none;
+		z-index: 59;
 	}
 	.flash-overlay {
 		position: fixed;
@@ -479,6 +605,12 @@
 	button:active { transform: translateY(0); }
 	button:disabled { opacity: .45; cursor: not-allowed; box-shadow: none; }
 	button.danger { background: linear-gradient(180deg, #ff8b8b, #c02b2b); color: #fff; }
+	button.ghost {
+		background: transparent;
+		color: #ffd86b;
+		border: 1px solid rgba(255, 216, 107, 0.6);
+		box-shadow: none;
+	}
 	button.small { padding: .35rem .65rem; font-size: .85rem; }
 	.btn-icon { width: 1em; height: 1em; }
 	.stats { display: flex; gap: 1rem; margin-top: 1rem; opacity: .95; }
@@ -508,6 +640,17 @@
 		padding: .65rem;
 		background: linear-gradient(180deg, rgba(0,0,0,.2), rgba(38, 14, 14, .24));
 		box-shadow: inset 0 0 0 1px rgba(255, 226, 150, 0.08);
+	}
+	.round.tier-gold { border-color: rgba(255, 220, 120, 0.75); box-shadow: 0 0 14px rgba(255, 212, 90, .2), inset 0 0 0 1px rgba(255, 226, 150, 0.2); }
+	.round.tier-silver { border-color: rgba(206, 223, 255, 0.7); box-shadow: 0 0 14px rgba(170, 200, 255, .2), inset 0 0 0 1px rgba(200, 220, 255, 0.2); }
+	.round.tier-bronze { border-color: rgba(238, 173, 120, 0.7); box-shadow: 0 0 14px rgba(235, 143, 77, .2), inset 0 0 0 1px rgba(250, 190, 140, 0.15); }
+	.prize-badge {
+		display: inline-flex;
+		padding: .2rem .55rem;
+		border-radius: 999px;
+		background: rgba(255, 216, 107, 0.2);
+		border: 1px solid rgba(255, 216, 107, 0.5);
+		font-size: .95rem;
 	}
 	.round-head { display: flex; justify-content: space-between; align-items: center; }
 	ul { list-style: none; padding: 0; margin: .4rem 0 0; }
