@@ -238,7 +238,7 @@
 		</div>
 	</section>
 
-	<section class="card winners">
+	<section class="card winners winners-below">
 		<div class="winner-header">
 			<h2>
 				<span class="title-icon" aria-hidden="true">
@@ -301,9 +301,10 @@
 		isolation: isolate;
 		min-height: 100vh;
 		padding: 2rem;
-		display: grid;
+		display: flex;
+		flex-direction: column;
 		gap: 1rem;
-		grid-template-columns: 1.2fr 1fr;
+		align-items: center;
 	}
 	.flash-overlay {
 		position: fixed;
@@ -357,6 +358,7 @@
 	.bg-glow-b { width: 280px; height: 280px; background: rgba(255, 205, 92, 0.18); bottom: -70px; right: -60px; }
 	.card {
 		position: relative;
+		width: min(1100px, 96vw);
 		backdrop-filter: blur(3px);
 		background: linear-gradient(160deg, rgba(48, 0, 0, 0.76), rgba(12, 12, 12, 0.88));
 		border: 1px solid rgba(255, 214, 118, 0.72);
@@ -364,6 +366,7 @@
 		padding: 1.2rem;
 		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.38), inset 0 0 0 1px rgba(255, 226, 150, 0.15);
 	}
+	.winners-below { margin-top: .2rem; }
 	.flashy-frame { overflow: hidden; }
 	.bulbs {
 		position: absolute;
@@ -485,5 +488,9 @@
 		35% { opacity: 1; transform: translate(-50%, -50%) scale(1.08); }
 		100% { opacity: 0; transform: translate(-50%, -50%) scale(1.02); }
 	}
-	@media (max-width: 900px) { .casino-bg { grid-template-columns: 1fr; padding: 1rem; } .name { font-size: 1.4rem; min-height: auto; } }
+	@media (max-width: 900px) {
+		.casino-bg { padding: 1rem; }
+		.card { width: 100%; }
+		.name { font-size: 1.4rem; min-height: auto; }
+	}
 </style>
