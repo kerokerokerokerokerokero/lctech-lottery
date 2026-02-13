@@ -458,7 +458,7 @@
 	.chips { display: flex; gap: .4rem; flex-wrap: wrap; margin-top: .4rem; }
 	.chips span { background: #3f2400; border: 1px solid #d4af37; padding: .2rem .45rem; border-radius: 999px; }
 	.winner-header { display: flex; justify-content: space-between; align-items: center; }
-	.rounds { display: grid; gap: .8rem; margin-top: .6rem; max-height: 70vh; overflow: auto; }
+	.rounds { display: grid; gap: .8rem; margin-top: .6rem; }
 	.round {
 		border: 1px solid rgba(255, 216, 107, 0.35);
 		border-radius: 12px;
