@@ -19,6 +19,7 @@
 	let drawing = $state(false);
 	let message = $state('');
 	let staged = $state<Member[]>([]);
+	let jackpotFlash = $state(false);
 
 	function persist() {
 		if (!browser) return;
@@ -81,6 +82,8 @@
 		const winner = randomMember(pool);
 		currentName = winner.name;
 		currentPhoto = winner.photo;
+		jackpotFlash = true;
+		setTimeout(() => (jackpotFlash = false), 260);
 		return winner;
 	}
 
@@ -149,6 +152,10 @@
 </script>
 
 <main class="casino-bg">
+	{#if jackpotFlash}
+		<div class="flash-overlay" aria-hidden="true"></div>
+		<div class="jackpot-text" aria-hidden="true">JACKPOT!</div>
+	{/if}
 	<img class="bg-art" src={`${base}/casino-chips.svg`} alt="" aria-hidden="true" />
 	<img class="slot-art" src={`${base}/slot-reel.svg`} alt="" aria-hidden="true" />
 	<div class="bg-glow bg-glow-a"></div>
@@ -298,6 +305,31 @@
 		gap: 1rem;
 		grid-template-columns: 1.2fr 1fr;
 	}
+	.flash-overlay {
+		position: fixed;
+		inset: 0;
+		z-index: 60;
+		pointer-events: none;
+		background: radial-gradient(circle, rgba(255,255,255,.95) 0%, rgba(255,226,150,.55) 30%, rgba(255,130,80,.15) 70%, transparent 100%);
+		animation: flashOut .28s ease-out forwards;
+	}
+	.jackpot-text {
+		position: fixed;
+		left: 50%;
+		top: 46%;
+		transform: translate(-50%, -50%);
+		z-index: 61;
+		pointer-events: none;
+		font-size: clamp(2.2rem, 8vw, 6rem);
+		font-weight: 900;
+		letter-spacing: .08em;
+		color: #fff3bf;
+		text-shadow:
+			0 0 10px rgba(255, 226, 138, 0.95),
+			0 0 26px rgba(255, 120, 80, 0.9),
+			0 0 42px rgba(255, 70, 45, 0.8);
+		animation: jackpotPop .55s ease-out forwards;
+	}
 	.bg-art {
 		position: absolute;
 		top: 0;
@@ -443,6 +475,15 @@
 		0% { transform: translate(var(--x), -10px) scale(.8) rotate(0deg); opacity: 0; }
 		20% { opacity: 1; }
 		100% { transform: translate(calc(var(--x) * .7), 18px) scale(1.08) rotate(18deg); opacity: 0; }
+	}
+	@keyframes flashOut {
+		from { opacity: 1; }
+		to { opacity: 0; }
+	}
+	@keyframes jackpotPop {
+		0% { opacity: 0; transform: translate(-50%, -50%) scale(.75); }
+		35% { opacity: 1; transform: translate(-50%, -50%) scale(1.08); }
+		100% { opacity: 0; transform: translate(-50%, -50%) scale(1.02); }
 	}
 	@media (max-width: 900px) { .casino-bg { grid-template-columns: 1fr; padding: 1rem; } .name { font-size: 1.4rem; min-height: auto; } }
 </style>
