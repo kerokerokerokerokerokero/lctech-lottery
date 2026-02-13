@@ -83,7 +83,7 @@
 		currentName = winner.name;
 		currentPhoto = winner.photo;
 		jackpotFlash = true;
-		setTimeout(() => (jackpotFlash = false), 260);
+		setTimeout(() => (jackpotFlash = false), 1200);
 		return winner;
 	}
 
@@ -155,7 +155,7 @@
 	{#if jackpotFlash}
 		<div class="flash-overlay" aria-hidden="true"></div>
 		<div class="jackpot-overlay" aria-hidden="true">
-			<div class="jackpot-text">JACKPOT!</div>
+			<div class="jackpot-text">中獎囉!!</div>
 			<div class="jackpot-winner">
 				{#if currentPhoto}
 					<img src={currentPhoto} alt={currentName} class="jackpot-avatar" />
@@ -320,7 +320,7 @@
 		z-index: 60;
 		pointer-events: none;
 		background: radial-gradient(circle, rgba(255,255,255,.95) 0%, rgba(255,226,150,.55) 30%, rgba(255,130,80,.15) 70%, transparent 100%);
-		animation: flashOut .28s ease-out forwards;
+		animation: flashOut 1.2s ease-out forwards;
 	}
 	.jackpot-overlay {
 		position: fixed;
@@ -332,11 +332,11 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		gap: .3rem;
-		animation: jackpotPop .6s ease-out forwards;
+		gap: .55rem;
+		animation: jackpotPop 1.2s ease-out forwards;
 	}
 	.jackpot-text {
-		font-size: clamp(2.2rem, 8vw, 6rem);
+		font-size: clamp(2.8rem, 10vw, 7rem);
 		font-weight: 900;
 		letter-spacing: .08em;
 		color: #fff3bf;
@@ -348,23 +348,23 @@
 	.jackpot-winner {
 		display: flex;
 		align-items: center;
-		gap: .55rem;
-		padding: .45rem .75rem;
+		gap: .8rem;
+		padding: .65rem 1rem;
 		border-radius: 999px;
 		background: rgba(33, 7, 7, 0.7);
 		border: 1px solid rgba(255, 216, 107, 0.7);
 		box-shadow: 0 0 14px rgba(255, 216, 107, 0.35);
 	}
 	.jackpot-avatar {
-		width: 36px;
-		height: 36px;
+		width: 56px;
+		height: 56px;
 		border-radius: 50%;
 		object-fit: cover;
 		border: 1px solid #ffd86b;
 	}
 	.jackpot-name {
-		font-weight: 800;
-		font-size: clamp(1rem, 2.6vw, 1.5rem);
+		font-weight: 900;
+		font-size: clamp(1.35rem, 3.4vw, 2.2rem);
 		color: #fff0bc;
 		text-shadow: 0 0 8px rgba(255, 226, 138, 0.8);
 	}
@@ -521,9 +521,10 @@
 		to { opacity: 0; }
 	}
 	@keyframes jackpotPop {
-		0% { opacity: 0; transform: translate(-50%, -50%) scale(.75); }
-		35% { opacity: 1; transform: translate(-50%, -50%) scale(1.08); }
-		100% { opacity: 0; transform: translate(-50%, -50%) scale(1.02); }
+		0% { opacity: 0; transform: translate(-50%, -50%) scale(.68); }
+		22% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+		70% { opacity: 1; transform: translate(-50%, -50%) scale(1.03); }
+		100% { opacity: 0; transform: translate(-50%, -50%) scale(1.01); }
 	}
 	@media (max-width: 900px) {
 		.casino-bg { padding: 1rem; }
