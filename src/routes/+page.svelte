@@ -151,7 +151,16 @@
 	<div class="bg-glow bg-glow-a"></div>
 	<div class="bg-glow bg-glow-b"></div>
 	<section class="card">
-		<h1>🎰 LC TECH 抽獎機</h1>
+		<h1>
+			<span class="title-icon" aria-hidden="true">
+				<svg viewBox="0 0 24 24" fill="none">
+					<path d="M4 6h16v12H4z" stroke="currentColor" stroke-width="1.8"/>
+					<path d="M8 10h8M8 14h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+					<circle cx="18" cy="12" r="2.2" fill="currentColor"/>
+				</svg>
+			</span>
+			LC TECH 抽獎機
+		</h1>
 		<p class="source">名單來源：<a href={data.source} target="_blank" rel="noreferrer">team.php</a></p>
 
 		<div class="display" class:drawing={drawing}>
@@ -188,7 +197,12 @@
 				連續抽獎數量
 				<input type="number" min="1" bind:value={drawCount} />
 			</label>
-			<button onclick={runDraw} disabled={drawing || remaining.length === 0}>開始抽獎</button>
+			<button onclick={runDraw} disabled={drawing || remaining.length === 0}>
+				<svg class="btn-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+					<path d="M8 6l10 6-10 6V6z" fill="currentColor"/>
+				</svg>
+				開始抽獎
+			</button>
 		</div>
 
 		{#if message}
@@ -203,7 +217,16 @@
 
 	<section class="card winners">
 		<div class="winner-header">
-			<h2>得獎區塊（依抽獎輪次 / 獎項）</h2>
+			<h2>
+				<span class="title-icon" aria-hidden="true">
+					<svg viewBox="0 0 24 24" fill="none">
+						<path d="M7 5h10v3a5 5 0 0 1-10 0V5z" stroke="currentColor" stroke-width="1.8"/>
+						<path d="M9 17h6M10 14h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+						<path d="M5 7H3a2 2 0 0 0 2 3M19 7h2a2 2 0 0 1-2 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+					</svg>
+				</span>
+				得獎區塊（依抽獎輪次 / 獎項）
+			</h2>
 			<button class="danger" onclick={clearAll} disabled={rounds.length === 0}>全部清除</button>
 		</div>
 
@@ -270,7 +293,9 @@
 		padding: 1.2rem;
 		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.38), inset 0 0 0 1px rgba(255, 226, 150, 0.15);
 	}
-	h1,h2,h3 { margin: 0 0 .5rem 0; color: #ffd86b; letter-spacing: .3px; }
+	h1,h2,h3 { margin: 0 0 .5rem 0; color: #ffd86b; letter-spacing: .3px; display:flex; align-items:center; gap:.5rem; }
+	.title-icon { width: 1.15em; height: 1.15em; display:inline-flex; color:#ffdf83; filter: drop-shadow(0 0 6px rgba(255,216,107,.45)); }
+	.title-icon svg { width:100%; height:100%; }
 	.source { margin: 0 0 1rem; font-size: .9rem; opacity: .9; }
 	.source a { color: #ffd86b; }
 	.display {
@@ -301,6 +326,9 @@
 	input { width: 170px; padding: .45rem; border-radius: 8px; border: 1px solid #d4af37; background: #2a1919; color: #fff; }
 	input[type='number'] { width: 90px; }
 	button {
+		display: inline-flex;
+		align-items: center;
+		gap: .4rem;
 		padding: .55rem .95rem;
 		border: 0;
 		border-radius: 10px;
@@ -316,6 +344,7 @@
 	button:disabled { opacity: .45; cursor: not-allowed; box-shadow: none; }
 	button.danger { background: linear-gradient(180deg, #ff8b8b, #c02b2b); color: #fff; }
 	button.small { padding: .35rem .65rem; font-size: .85rem; }
+	.btn-icon { width: 1em; height: 1em; }
 	.stats { display: flex; gap: 1rem; margin-top: 1rem; opacity: .95; }
 	.msg { color: #ffe9a3; margin: .75rem 0 0; }
 	.staged { margin-bottom: .8rem; }
