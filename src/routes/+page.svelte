@@ -154,7 +154,15 @@
 <main class="casino-bg">
 	{#if jackpotFlash}
 		<div class="flash-overlay" aria-hidden="true"></div>
-		<div class="jackpot-text" aria-hidden="true">JACKPOT!</div>
+		<div class="jackpot-overlay" aria-hidden="true">
+			<div class="jackpot-text">JACKPOT!</div>
+			<div class="jackpot-winner">
+				{#if currentPhoto}
+					<img src={currentPhoto} alt={currentName} class="jackpot-avatar" />
+				{/if}
+				<div class="jackpot-name">{currentName}</div>
+			</div>
+		</div>
 	{/if}
 	<img class="bg-art" src={`${base}/casino-chips.svg`} alt="" aria-hidden="true" />
 	<img class="slot-art" src={`${base}/slot-reel.svg`} alt="" aria-hidden="true" />
@@ -314,13 +322,20 @@
 		background: radial-gradient(circle, rgba(255,255,255,.95) 0%, rgba(255,226,150,.55) 30%, rgba(255,130,80,.15) 70%, transparent 100%);
 		animation: flashOut .28s ease-out forwards;
 	}
-	.jackpot-text {
+	.jackpot-overlay {
 		position: fixed;
 		left: 50%;
 		top: 46%;
 		transform: translate(-50%, -50%);
 		z-index: 61;
 		pointer-events: none;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: .3rem;
+		animation: jackpotPop .6s ease-out forwards;
+	}
+	.jackpot-text {
 		font-size: clamp(2.2rem, 8vw, 6rem);
 		font-weight: 900;
 		letter-spacing: .08em;
@@ -329,7 +344,29 @@
 			0 0 10px rgba(255, 226, 138, 0.95),
 			0 0 26px rgba(255, 120, 80, 0.9),
 			0 0 42px rgba(255, 70, 45, 0.8);
-		animation: jackpotPop .55s ease-out forwards;
+	}
+	.jackpot-winner {
+		display: flex;
+		align-items: center;
+		gap: .55rem;
+		padding: .45rem .75rem;
+		border-radius: 999px;
+		background: rgba(33, 7, 7, 0.7);
+		border: 1px solid rgba(255, 216, 107, 0.7);
+		box-shadow: 0 0 14px rgba(255, 216, 107, 0.35);
+	}
+	.jackpot-avatar {
+		width: 36px;
+		height: 36px;
+		border-radius: 50%;
+		object-fit: cover;
+		border: 1px solid #ffd86b;
+	}
+	.jackpot-name {
+		font-weight: 800;
+		font-size: clamp(1rem, 2.6vw, 1.5rem);
+		color: #fff0bc;
+		text-shadow: 0 0 8px rgba(255, 226, 138, 0.8);
 	}
 	.bg-art {
 		position: absolute;
