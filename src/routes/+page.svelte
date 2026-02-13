@@ -20,6 +20,8 @@
 	let message = $state('');
 	let staged = $state<Member[]>([]);
 	let jackpotFlash = $state(false);
+	let jackpotName = $state('');
+	let jackpotPhoto = $state('');
 
 	function persist() {
 		if (!browser) return;
@@ -82,6 +84,8 @@
 		const winner = randomMember(pool);
 		currentName = winner.name;
 		currentPhoto = winner.photo;
+		jackpotName = winner.name;
+		jackpotPhoto = winner.photo;
 		jackpotFlash = true;
 		setTimeout(() => (jackpotFlash = false), 1200);
 		return winner;
@@ -157,10 +161,10 @@
 		<div class="jackpot-overlay" aria-hidden="true">
 			<div class="jackpot-text">中獎囉!!</div>
 			<div class="jackpot-winner">
-				{#if currentPhoto}
-					<img src={currentPhoto} alt={currentName} class="jackpot-avatar" />
+				{#if jackpotPhoto}
+					<img src={jackpotPhoto} alt={jackpotName} class="jackpot-avatar" />
 				{/if}
-				<div class="jackpot-name">{currentName}</div>
+				<div class="jackpot-name">{jackpotName}</div>
 			</div>
 		</div>
 	{/if}
