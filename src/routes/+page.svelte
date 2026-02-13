@@ -153,7 +153,12 @@
 	<img class="slot-art" src={`${base}/slot-reel.svg`} alt="" aria-hidden="true" />
 	<div class="bg-glow bg-glow-a"></div>
 	<div class="bg-glow bg-glow-b"></div>
-	<section class="card">
+	<section class="card flashy-frame">
+		<div class="bulbs" aria-hidden="true">
+			{#each Array(24) as _, i}
+				<span style={`--i:${i}`}></span>
+			{/each}
+		</div>
 		<h1>
 			<span class="title-icon" aria-hidden="true">
 				<svg viewBox="0 0 24 24" fill="none">
@@ -179,6 +184,14 @@
 				<div class="name">{currentName}</div>
 			</div>
 		</div>
+
+		{#if drawing || staged.length > 0}
+			<div class="jackpot" aria-hidden="true">
+				{#each Array(12) as _, i}
+					<span style={`--d:${i * 0.08}s; --x:${(i % 6) * 18 - 45}px`}>💰</span>
+				{/each}
+			</div>
+		{/if}
 
 		{#if staged.length > 0}
 			<div class="staged">
@@ -311,6 +324,7 @@
 	.bg-glow-a { width: 340px; height: 340px; background: rgba(255, 70, 70, 0.22); top: -80px; left: -70px; }
 	.bg-glow-b { width: 280px; height: 280px; background: rgba(255, 205, 92, 0.18); bottom: -70px; right: -60px; }
 	.card {
+		position: relative;
 		backdrop-filter: blur(3px);
 		background: linear-gradient(160deg, rgba(48, 0, 0, 0.76), rgba(12, 12, 12, 0.88));
 		border: 1px solid rgba(255, 214, 118, 0.72);
@@ -318,6 +332,25 @@
 		padding: 1.2rem;
 		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.38), inset 0 0 0 1px rgba(255, 226, 150, 0.15);
 	}
+	.flashy-frame { overflow: hidden; }
+	.bulbs {
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+	}
+	.bulbs span {
+		position: absolute;
+		width: 8px;
+		height: 8px;
+		border-radius: 50%;
+		background: #ffd86b;
+		box-shadow: 0 0 8px rgba(255, 216, 107, 0.9), 0 0 16px rgba(255, 96, 64, 0.6);
+		animation: bulbBlink 1s linear infinite;
+		animation-delay: calc(var(--i) * 0.05s);
+	}
+	.bulbs span:nth-child(-n+8) { top: 8px; left: calc(10% + (var(--i) * 10%)); }
+	.bulbs span:nth-child(n+9):nth-child(-n+16) { right: 8px; top: calc(10% + ((var(--i) - 8) * 10%)); }
+	.bulbs span:nth-child(n+17):nth-child(-n+24) { bottom: 8px; right: calc(10% + ((var(--i) - 16) * 10%)); }
 	h1,h2,h3 { margin: 0 0 .5rem 0; color: #ffd86b; letter-spacing: .3px; display:flex; align-items:center; gap:.5rem; }
 	.title-icon { width: 1.15em; height: 1.15em; display:inline-flex; color:#ffdf83; filter: drop-shadow(0 0 6px rgba(255,216,107,.45)); }
 	.title-icon svg { width:100%; height:100%; }
@@ -372,6 +405,20 @@
 	.btn-icon { width: 1em; height: 1em; }
 	.stats { display: flex; gap: 1rem; margin-top: 1rem; opacity: .95; }
 	.msg { color: #ffe9a3; margin: .75rem 0 0; }
+	.jackpot {
+		position: relative;
+		height: 22px;
+		overflow: visible;
+		margin: -.2rem 0 .4rem;
+	}
+	.jackpot span {
+		position: absolute;
+		left: 50%;
+		font-size: 1.05rem;
+		animation: coinDrop .9s ease-in-out infinite;
+		animation-delay: var(--d);
+		transform: translateX(var(--x));
+	}
 	.staged { margin-bottom: .8rem; }
 	.chips { display: flex; gap: .4rem; flex-wrap: wrap; margin-top: .4rem; }
 	.chips span { background: #3f2400; border: 1px solid #d4af37; padding: .2rem .45rem; border-radius: 999px; }
@@ -391,5 +438,11 @@
 	.mini { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; border: 1px solid #d4af37; }
 	.empty { opacity: .8; }
 	@keyframes flicker { from { opacity: .7; transform: scale(.99);} to {opacity:1; transform: scale(1.01);} }
+	@keyframes bulbBlink { 0%,100% { opacity: .35; } 50% { opacity: 1; } }
+	@keyframes coinDrop {
+		0% { transform: translate(var(--x), -10px) scale(.8) rotate(0deg); opacity: 0; }
+		20% { opacity: 1; }
+		100% { transform: translate(calc(var(--x) * .7), 18px) scale(1.08) rotate(18deg); opacity: 0; }
+	}
 	@media (max-width: 900px) { .casino-bg { grid-template-columns: 1fr; padding: 1rem; } .name { font-size: 1.4rem; min-height: auto; } }
 </style>
