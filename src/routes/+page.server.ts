@@ -3,9 +3,11 @@ import type { PageServerLoad } from './$types';
 type Member = {
 	id: string;
 	name: string;
+	photo: string;
 };
 
 const TEAM_URL = 'https://www.lctech.com.tw/team.php';
+const TEAM_BASE = 'https://www.lctech.com.tw/';
 
 const clean = (v: string) =>
 	v
@@ -20,9 +22,11 @@ function parseMembers(html: string): Member[] {
 	for (const li of liMatches) {
 		const last = li.match(/<div class="last-name">([\s\S]*?)<\/div>/)?.[1] ?? '';
 		const first = li.match(/<div class="first-name">([\s\S]*?)<\/div>/)?.[1] ?? '';
+		const dataBg = li.match(/<div class="photo"[^>]*data-bg="([^"]*)"/)?.[1] ?? '';
 		const full = clean(`${clean(last)} ${clean(first)}`);
 		if (!full) continue;
-		names.push({ id: `${full}-${names.length}`, name: full });
+		const photo = dataBg ? new URL(dataBg, TEAM_BASE).toString() : '';
+		names.push({ id: `${full}-${names.length}`, name: full, photo });
 	}
 
 	// 去重（同名保留第一個）
