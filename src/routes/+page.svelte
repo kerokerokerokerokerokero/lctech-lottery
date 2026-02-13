@@ -148,6 +148,8 @@
 </script>
 
 <main class="casino-bg">
+	<div class="bg-glow bg-glow-a"></div>
+	<div class="bg-glow bg-glow-b"></div>
 	<section class="card">
 		<h1>🎰 LC TECH 抽獎機</h1>
 		<p class="source">名單來源：<a href={data.source} target="_blank" rel="noreferrer">team.php</a></p>
@@ -241,26 +243,77 @@
 	:global(body) {
 		margin: 0;
 		font-family: 'Segoe UI', 'Noto Sans TC', sans-serif;
-		background: radial-gradient(circle at top, #3b0a0a, #120404 60%);
+		background:
+			radial-gradient(circle at 20% 10%, rgba(255, 80, 80, 0.16), transparent 30%),
+			radial-gradient(circle at 80% 20%, rgba(255, 215, 120, 0.12), transparent 28%),
+			linear-gradient(180deg, #2a0606 0%, #120404 60%, #090202 100%);
 		color: #f8e7b5;
 	}
-	.casino-bg { min-height: 100vh; padding: 2rem; display: grid; gap: 1rem; grid-template-columns: 1.2fr 1fr; }
-	.card { background: linear-gradient(160deg, rgba(40,0,0,.85), rgba(10,10,10,.9)); border: 1px solid #d4af37; border-radius: 16px; padding: 1.2rem; box-shadow: 0 0 20px rgba(212,175,55,.25); }
-	h1,h2,h3 { margin: 0 0 .5rem 0; color: #ffd86b; }
+	.casino-bg {
+		position: relative;
+		overflow: hidden;
+		isolation: isolate;
+		min-height: 100vh;
+		padding: 2rem;
+		display: grid;
+		gap: 1rem;
+		grid-template-columns: 1.2fr 1fr;
+	}
+	.bg-glow { position: absolute; border-radius: 999px; filter: blur(40px); z-index: -1; }
+	.bg-glow-a { width: 340px; height: 340px; background: rgba(255, 70, 70, 0.22); top: -80px; left: -70px; }
+	.bg-glow-b { width: 280px; height: 280px; background: rgba(255, 205, 92, 0.18); bottom: -70px; right: -60px; }
+	.card {
+		backdrop-filter: blur(3px);
+		background: linear-gradient(160deg, rgba(48, 0, 0, 0.76), rgba(12, 12, 12, 0.88));
+		border: 1px solid rgba(255, 214, 118, 0.72);
+		border-radius: 18px;
+		padding: 1.2rem;
+		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.38), inset 0 0 0 1px rgba(255, 226, 150, 0.15);
+	}
+	h1,h2,h3 { margin: 0 0 .5rem 0; color: #ffd86b; letter-spacing: .3px; }
 	.source { margin: 0 0 1rem; font-size: .9rem; opacity: .9; }
 	.source a { color: #ffd86b; }
-	.display { padding: 1rem; border-radius: 12px; background: #1f1010; border: 1px solid #7e5b13; margin-bottom: 1rem; display: flex; gap: 1rem; align-items: center; }
-	.display.drawing .name { animation: flicker .08s infinite alternate; }
+	.display {
+		padding: 1rem;
+		border-radius: 14px;
+		background: linear-gradient(180deg, rgba(24, 12, 12, 0.96), rgba(31, 16, 16, 0.86));
+		border: 1px solid rgba(255, 208, 100, 0.5);
+		margin-bottom: 1rem;
+		display: flex;
+		gap: 1rem;
+		align-items: center;
+		box-shadow: inset 0 0 25px rgba(255, 171, 49, 0.1);
+	}
+	.display.drawing .name { animation: flicker .08s infinite alternate; text-shadow: 0 0 10px rgba(255, 219, 131, 0.8); }
 	.avatar-wrap { width: 78px; }
-	.avatar { width: 78px; height: 78px; border-radius: 50%; object-fit: cover; border: 2px solid #d4af37; }
+	.avatar {
+		width: 82px;
+		height: 82px;
+		border-radius: 50%;
+		object-fit: cover;
+		border: 2px solid #ffd86b;
+		box-shadow: 0 0 0 3px rgba(255, 216, 107, 0.2), 0 0 18px rgba(255, 205, 92, 0.45);
+	}
 	.avatar.placeholder, .mini.placeholder { display:flex; align-items:center; justify-content:center; background:#2a1919; color:#ffd86b; font-weight:700; }
 	.label { font-size: .85rem; opacity: .8; }
 	.name { font-size: 2rem; font-weight: 700; min-height: 3rem; }
 	.controls { display: flex; gap: .8rem; align-items: end; flex-wrap: wrap; }
 	input { width: 170px; padding: .45rem; border-radius: 8px; border: 1px solid #d4af37; background: #2a1919; color: #fff; }
 	input[type='number'] { width: 90px; }
-	button { padding: .55rem .9rem; border: 0; border-radius: 10px; background: linear-gradient(180deg, #ffd86b, #c08711); color: #1d1201; font-weight: 700; cursor: pointer; }
-	button:disabled { opacity: .45; cursor: not-allowed; }
+	button {
+		padding: .55rem .95rem;
+		border: 0;
+		border-radius: 10px;
+		background: linear-gradient(180deg, #ffe49a, #d4951c);
+		color: #1d1201;
+		font-weight: 800;
+		cursor: pointer;
+		transition: transform .12s ease, filter .12s ease, box-shadow .12s ease;
+		box-shadow: 0 4px 12px rgba(212, 135, 17, 0.35);
+	}
+	button:hover { transform: translateY(-1px); filter: brightness(1.04); }
+	button:active { transform: translateY(0); }
+	button:disabled { opacity: .45; cursor: not-allowed; box-shadow: none; }
 	button.danger { background: linear-gradient(180deg, #ff8b8b, #c02b2b); color: #fff; }
 	button.small { padding: .35rem .65rem; font-size: .85rem; }
 	.stats { display: flex; gap: 1rem; margin-top: 1rem; opacity: .95; }
@@ -270,7 +323,13 @@
 	.chips span { background: #3f2400; border: 1px solid #d4af37; padding: .2rem .45rem; border-radius: 999px; }
 	.winner-header { display: flex; justify-content: space-between; align-items: center; }
 	.rounds { display: grid; gap: .8rem; margin-top: .6rem; max-height: 70vh; overflow: auto; }
-	.round { border: 1px solid rgba(255,216,107,.35); border-radius: 12px; padding: .65rem; background: rgba(0,0,0,.2); }
+	.round {
+		border: 1px solid rgba(255, 216, 107, 0.35);
+		border-radius: 12px;
+		padding: .65rem;
+		background: linear-gradient(180deg, rgba(0,0,0,.2), rgba(38, 14, 14, .24));
+		box-shadow: inset 0 0 0 1px rgba(255, 226, 150, 0.08);
+	}
 	.round-head { display: flex; justify-content: space-between; align-items: center; }
 	ul { list-style: none; padding: 0; margin: .4rem 0 0; }
 	li { display: flex; justify-content: space-between; align-items: center; padding: .45rem .2rem; border-bottom: 1px solid rgba(255,216,107,.15); }
