@@ -312,7 +312,7 @@
 		overflow: hidden;
 		isolation: isolate;
 		min-height: 100vh;
-		padding: 2rem;
+		padding: 2rem clamp(1rem, 4vw, 2.5rem);
 		display: flex;
 		flex-direction: column;
 		gap: 1rem;
@@ -399,7 +399,9 @@
 	.bg-glow-b { width: 280px; height: 280px; background: rgba(255, 205, 92, 0.18); bottom: -70px; right: -60px; }
 	.card {
 		position: relative;
-		width: min(1100px, 96vw);
+		box-sizing: border-box;
+		width: 100%;
+		max-width: 1100px;
 		backdrop-filter: blur(3px);
 		background: linear-gradient(160deg, rgba(48, 0, 0, 0.76), rgba(12, 12, 12, 0.88));
 		border: 1px solid rgba(255, 214, 118, 0.72);
@@ -531,8 +533,14 @@
 		100% { opacity: 0; transform: translate(-50%, -50%) scale(1.01); }
 	}
 	@media (max-width: 900px) {
-		.casino-bg { padding: 1rem; }
-		.card { width: 100%; }
+		.casino-bg { padding: 1rem .9rem 1.25rem; gap: .85rem; }
+		.card { width: 100%; padding: 1rem .85rem; border-radius: 14px; }
 		.name { font-size: 1.4rem; min-height: auto; }
+	}
+
+	@media (max-width: 520px) {
+		.casino-bg { padding: .85rem .75rem 1rem; }
+		.card { padding: .9rem .75rem; border-radius: 12px; }
+		.controls { gap: .55rem; }
 	}
 </style>
